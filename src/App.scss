@@ -1,32 +1,53 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
+._rc-v-keyboard {
+  width: 900px;
+  padding: 5px;
+  border-radius: 6px;
+  border: 1px solid gray;
+  background-color: #f3f3f3;
+  box-shadow: 0 0 0 4px #0000000f;
+  ._keys {
+    display: flex;
+    margin: 1px 0;
+    ._key {
+      border: 1px solid grey;
+      border-radius: 6px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 5px;
+      margin: 1px;
+      text-transform: capitalize;
+      height: 50px;
+      box-sizing: border-box;
+      background-color: white;
+      // make keyboard-text none selectable
+      -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+      -khtml-user-select: none; /* Konqueror HTML */
+      -moz-user-select: none; /* Firefox */
+      -ms-user-select: none; /* Internet Explorer/Edge */
+      user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+      ._sub {
+        font-size: 70%;
+        margin-bottom: 7px;
+      }
+      &._special {
+        flex: 2;
+      }
+      &:last-child._special {
+        justify-content: flex-end;
+        align-items: flex-end;
+      }
+      &:first-child._special {
+        justify-content: flex-end;
+        align-items: flex-start;
+      }
+      &._space {
+        flex: 9;
+      }
+    }
   }
 }
