@@ -1,10 +1,13 @@
 ._rc-v-keyboard {
-  width: 900px;
+  // width: 900px;
   padding: 5px;
   border-radius: 6px;
   border: 1px solid gray;
   background-color: #f3f3f3;
   box-shadow: 0 0 0 4px #0000000f;
+  position: fixed;
+  transition-property: all;
+  transition-property: transform;
   ._keys {
     display: flex;
     margin: 1px 0;
@@ -22,6 +25,9 @@
       height: 50px;
       box-sizing: border-box;
       background-color: white;
+
+      outline: none !important;
+
       // make keyboard-text none selectable
       -webkit-touch-callout: none; /* iOS Safari */
       -webkit-user-select: none; /* Safari */

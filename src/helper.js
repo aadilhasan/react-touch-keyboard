@@ -221,3 +221,7 @@ export const fifthRow = [
     main: "ctrl"
   }
 ];
+
+export const matchNodeType = (node, nodeType = "") => {
+  return node && node.nodeName === nodeType.toUpperCase();
+};
