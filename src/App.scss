@@ -39,6 +39,10 @@
       ._sub {
         font-size: 70%;
         margin-bottom: 7px;
+        pointer-events: none;
+      }
+      ._main {
+        pointer-events: none;
       }
       &._special {
         flex: 2;
@@ -52,7 +56,17 @@
         align-items: flex-start;
       }
       &._space {
-        flex: 9;
+        flex: 13;
+      }
+      &._active {
+        border-color: #e91e63;
+        color: #e91e63;
+      }
+      &._disabled {
+        color: #8080806b;
+        border-color: #80808057;
+        background-color: transparent;
+        cursor: not-allowed;
       }
     }
   }

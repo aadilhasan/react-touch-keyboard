@@ -50,18 +50,10 @@ export const topRowItems = [
   {
     main: "+",
     sub: "="
-  },
-  {
-    main: "delete",
-    isSpecial: true
   }
 ];
 
 export const secondRow = [
-  {
-    main: "tab",
-    isSpecial: true
-  },
   {
     main: "q"
   },
@@ -105,10 +97,6 @@ export const secondRow = [
 
 export const thirdRow = [
   {
-    main: "caps lock",
-    isSpecial: true
-  },
-  {
     main: "a"
   },
   {
@@ -145,18 +133,10 @@ export const thirdRow = [
   {
     main: "'",
     sub: '"'
-  },
-  {
-    main: "return",
-    isSpecial: true
   }
 ];
 
 export const fourthRow = [
-  {
-    main: "shift",
-    isSpecial: true
-  },
   {
     main: "z"
   },
@@ -189,10 +169,6 @@ export const fourthRow = [
   {
     main: "/",
     sub: "?"
-  },
-  {
-    main: "shift",
-    isSpecial: true
   }
 ];
 
@@ -211,7 +187,7 @@ export const fifthRow = [
     main: "alt"
   },
   {
-    main: "",
+    main: " ",
     isSpace: true
   },
   {
@@ -222,6 +198,63 @@ export const fifthRow = [
   }
 ];
 
-export const matchNodeType = (node, nodeType = "") => {
-  return node && node.nodeName === nodeType.toUpperCase();
+export const isTextInputElement = node => {
+  return (
+    node &&
+    node.nodeName &&
+    (node.nodeName === "INPUT" || node.nodeName === "TEXTAREA")
+  );
+};
+
+// export const addEnter = (targetEl: HTMLInputElement, key: string): string => {
+//   if (key === "enter") {
+//     if (targetEl && targetEl.nodeName === "TEXTAREA") {
+//       return key + "\\\n";
+//     }
+//     return "";
+//   }
+//   return key;
+// };
+
+export const addEnter = (targetEl, key) => {
+  if (key === "enter") {
+    if (targetEl && targetEl.nodeName === "TEXTAREA") {
+      return key + "\\\n";
+    }
+    return "";
+  }
+  return key;
+};
+
+// export const shiftIt = (
+//   activeKeys: Map<string, undefined>,
+//   targetEl: HTMLInputElement,
+//   mainValue: string
+// ): string => {
+//   if (activeKeys.has("shift")) {
+//     const shiftValue = targetEl.getAttribute("shift-val");
+//     mainValue = shiftValue ? shiftValue : mainValue.toUpperCase();
+//   }
+//   return mainValue;
+// };
+
+export const shiftIt = (activeKeys, targetEl, mainValue) => {
+  if (activeKeys.has("shift")) {
+    const shiftValue = targetEl.getAttribute("shift-val");
+    mainValue = shiftValue ? shiftValue : mainValue.toUpperCase();
+  }
+  return mainValue;
+};
+
+// export const capsIt = (activeKeys: any, mainValue: string): string => {
+//   if (activeKeys.has("caps")) {
+//     mainValue = mainValue.toUpperCase();
+//   }
+//   return mainValue;
+// };
+export const capsIt = (activeKeys, mainValue) => {
+  if (activeKeys.has("caps")) {
+    mainValue = mainValue.toUpperCase();
+  }
+  return mainValue;
 };
