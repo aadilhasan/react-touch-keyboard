@@ -13,7 +13,8 @@ import {
   isTextInputElement,
   addEnter,
   shiftIt,
-  capsIt
+  capsIt,
+  focusNext
 } from "./helper";
 
 import "./App.scss";
@@ -23,6 +24,8 @@ type myState = {
   top: number;
   left: number;
   activeKeys: Map<string, undefined>;
+  input: string;
+  textarea: string;
 };
 
 type elementPosition = {
@@ -37,8 +40,6 @@ declare global {
   }
 }
 
-// declare function Object
-
 class App extends Component {
   timeout: number = -1;
   width: number = 900;
@@ -46,21 +47,25 @@ class App extends Component {
   activeElement: HTMLInputElement | null = null;
   lastFocused: HTMLElement | null = null;
   customInputEvent: any = null;
-  customTextAreaEvent: any = null;
+  customEnterInputEvent: any = null;
   nativeInputValueSetter: any = null;
   nativeTextAreaValueSetter: any = null;
-  disabled: Array<string> = [];
+  disabled: Array<string> = ["ctrl", "fn", "window", "alt"];
 
   state: myState = {
     visible: false,
     activeKeys: new Map(),
     top: 0,
-    left: 0
+    left: 0,
+    input: "",
+    textarea: ""
   };
 
   componentDidMount() {
     this.addEventListeners(Object);
-    this.disabled = ["ctrl", "fn", "window", "alt"];
+  }
+  componentWillUnmount() {
+    this.removeEventListeners();
   }
 
   addEventListeners = (obj: any) => {
@@ -78,10 +83,14 @@ class App extends Component {
     ).set;
 
     this.customInputEvent = new Event("input", { bubbles: true });
-    this.customTextAreaEvent = new Event("textarea", { bubbles: true });
 
     document.body.addEventListener("focusin", this.onFocus);
     document.body.addEventListener("focusout", this.onBlur);
+  };
+
+  removeEventListeners = () => {
+    document.body.removeEventListener("focusin", this.onFocus);
+    document.body.removeEventListener("focusout", this.onBlur);
   };
 
   onFocus = (e: Event) => {
@@ -130,6 +139,8 @@ class App extends Component {
     //   return
     // }
     this.timeout = setTimeout(() => {
+      if (this.timeout === -1) return; // fix edge case when on double tab keyboard hides
+
       this.timeout = -1;
       this.setState({ visible: false });
       this.lastFocused = null;
@@ -140,6 +151,7 @@ class App extends Component {
     if (this.timeout !== -1) {
       // if there a timer added by blur even then remove it
       clearTimeout(this.timeout);
+      this.timeout = -1;
     }
   };
 
@@ -166,7 +178,6 @@ class App extends Component {
     const classList = targetEl.classList;
     const disabled = classList.contains("_disabled");
     if (disabled) {
-      console.log(" pressed disabled key");
       return;
     }
 
@@ -185,7 +196,7 @@ class App extends Component {
 
     const { activeKeys } = this.state;
 
-    pressedKey = addEnter(targetEl, pressedKey);
+    pressedKey = addEnter(this.activeElement, pressedKey);
 
     if (pressedKey === "delete") {
       existingValue = existingValue.slice(0, -1);
@@ -193,7 +204,8 @@ class App extends Component {
     }
 
     if (pressedKey === "tab") {
-      pressedKey = "  ";
+      focusNext(this.activeElement);
+      return;
     }
 
     pressedKey = shiftIt(activeKeys, targetEl, pressedKey);
@@ -206,21 +218,16 @@ class App extends Component {
     element: HTMLInputElement | HTMLTextAreaElement,
     newValue: string
   ) => {
-    if (!element) return;
-    if (
-      element.nodeName === "INPUT" &&
-      this.nativeInputValueSetter &&
-      this.customInputEvent
-    ) {
+    if (!element || !this.customInputEvent) return;
+    if (element.nodeName === "INPUT" && this.nativeInputValueSetter) {
       this.nativeInputValueSetter.call(element, newValue);
       element.dispatchEvent(this.customInputEvent);
     } else if (
       element.nodeName === "TEXTAREA" &&
-      this.nativeTextAreaValueSetter &&
-      this.customTextAreaEvent
+      this.nativeTextAreaValueSetter
     ) {
       this.nativeTextAreaValueSetter.call(element, newValue);
-      element.dispatchEvent(this.customTextAreaEvent);
+      element.dispatchEvent(this.customInputEvent);
     }
   };
 
@@ -235,7 +242,7 @@ class App extends Component {
   };
 
   render() {
-    const { visible, ...position } = this.state;
+    const { visible, input, textarea, ...position } = this.state;
     return (
       <div>
         <form
@@ -245,17 +252,27 @@ class App extends Component {
           }}
         >
           <input
+            value={input}
             placeholder="first input"
-            onChange={e => console.log(" changed")}
+            onChange={e => this.setState({ input: e.target.value })}
           />
           <textarea
+            id="t"
+            value={textarea}
             placeholder="first input"
-            onChange={e => console.log(" text-area changed")}
+            onChange={e => {
+              let x = { value: e.target.value };
+              console.log("text area changed ", x);
+              this.setState({ textarea: e.target.value });
+            }}
           />
 
-          <input placeholder="first input" />
+          <input
+            placeholder="first input"
+            onChange={e => console.log(" input changed")}
+          />
           <button> btn </button>
-          <input placeholder="first input" />
+          <input value={input} placeholder="first input" />
         </form>
         {visible && (
           <Keyboard

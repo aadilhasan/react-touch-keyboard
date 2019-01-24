@@ -219,7 +219,7 @@ export const isTextInputElement = node => {
 export const addEnter = (targetEl, key) => {
   if (key === "enter") {
     if (targetEl && targetEl.nodeName === "TEXTAREA") {
-      return key + "\\\n";
+      return "\n";
     }
     return "";
   }
@@ -257,4 +257,17 @@ export const capsIt = (activeKeys, mainValue) => {
     mainValue = mainValue.toUpperCase();
   }
   return mainValue;
+};
+
+export const focusNext = el => {
+  const allFocusableElements = document.querySelectorAll(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+  let i = 0,
+    len = allFocusableElements.length;
+  for (i; i < len; i += 1) {
+    if (allFocusableElements[i] === el && i + 1 < len) {
+      allFocusableElements[i + 1].focus();
+    }
+  }
 };
