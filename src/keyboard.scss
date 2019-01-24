@@ -1,11 +1,12 @@
 ._rc-v-keyboard {
-  // width: 900px;
+  box-sizing: border-box;
+  position: fixed;
+  top: 0;
   padding: 5px;
   border-radius: 6px;
   border: 1px solid gray;
   background-color: #f3f3f3;
   box-shadow: 0 0 0 4px #0000000f;
-  position: fixed;
   transition-property: all;
   transition-property: transform;
   ._keys {

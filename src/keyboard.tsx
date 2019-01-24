@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 
-import Key from "./normal-key";
+import KeyboardRows from "./rows";
 import SpecialKey from "./special-key";
 import SpaceKey from "./space-key";
 
 import {
-  topRowItems,
+  firstRowItems,
   secondRow,
   thirdRow,
   fourthRow,
@@ -17,21 +17,7 @@ import {
   focusNext
 } from "./helper";
 
-import "./App.scss";
-
-type myState = {
-  visible: Boolean;
-  top: number;
-  left: number;
-  activeKeys: Map<string, undefined>;
-  input: string;
-  textarea: string;
-};
-
-type elementPosition = {
-  top: number;
-  left: number;
-};
+import "./keyboard.scss";
 
 declare global {
   interface Window {
@@ -40,7 +26,56 @@ declare global {
   }
 }
 
-class App extends Component {
+type elementPosition = {
+  top: number;
+  left: number;
+};
+
+type KeyboardProps = {
+  marginFromInput: number;
+  focusNextOnTab: Boolean;
+  alwaysOpen: Boolean;
+  disabled: Array<string>;
+  width: number;
+  height: number | string;
+  fullScreen: Boolean;
+  stickToBottom: Boolean;
+  onKeyPress: Function;
+  beforeOpen: Function;
+  afterOpen: Function;
+  beforeClose: Function;
+  afterClose: Function;
+};
+
+let DefaultProps = {
+  marginFromInput: 10,
+  focusNextOnTab: true,
+  alwaysOpen: false,
+  disabled: [],
+  width: 900,
+  height: "auto",
+  fullScreen: false,
+  stickToBottom: false,
+  onKeyPress: () => {},
+  beforeOpen: () => {}, // gets triggered every time focus changes
+  afterOpen: () => {}, // gets triggered every time focus changes
+  beforeClose: () => {},
+  afterClose: () => {}
+};
+
+type MyState = {
+  visible: Boolean;
+  top: number;
+  left: number;
+  activeKeys: Map<string, undefined>;
+  input: string;
+  textarea: string;
+};
+
+// TODO: when input is below the keyboard show input's value in keyboard
+// TODO: add expand keyboard btn, close keyboard btn, fullScreenBtn etc.
+
+class Keyboard extends Component<KeyboardProps> {
   timeout: number = -1;
   width: number = 900;
   paddingFromInput: number = 0;
@@ -52,7 +87,9 @@ class App extends Component {
   nativeTextAreaValueSetter: any = null;
   disabled: Array<string> = ["ctrl", "fn", "window", "alt"];
 
-  state: myState = {
+  static defaultProps = DefaultProps;
+
+  state: MyState = {
     visible: false,
     activeKeys: new Map(),
     top: 0,
@@ -60,6 +97,11 @@ class App extends Component {
     input: "",
     textarea: ""
   };
+
+  constructor(props: any) {
+    super(props);
+    this.state = { ...this.state };
+  }
 
   componentDidMount() {
     this.addEventListeners(Object);
@@ -103,7 +145,10 @@ class App extends Component {
       // if there a timer added by blur even then remove it
       this.cancelTimer();
       const position = this.getKeyboardPosition(node);
-      this.setState({ visible: true, ...position });
+      this.props.beforeOpen();
+      this.setState({ visible: true, ...position }, () => {
+        this.props.afterOpen();
+      });
     } else if (
       this.lastFocused &&
       node &&
@@ -135,14 +180,18 @@ class App extends Component {
     // if(immediately){
     //   clearTimeout(this.timeout);
     //   this.timeout = -1;
-    //   this.setState({ visible: false });
+    //   this.props.beforeClose();
+    //   this.setState({ visible: false },  () => { this.props.afterClose(); });
     //   return
     // }
     this.timeout = setTimeout(() => {
       if (this.timeout === -1) return; // fix edge case when on double tab keyboard hides
 
       this.timeout = -1;
-      this.setState({ visible: false });
+      this.props.beforeClose();
+      this.setState({ visible: false }, () => {
+        this.props.afterClose();
+      });
       this.lastFocused = null;
     }, 300);
   };
@@ -163,15 +212,17 @@ class App extends Component {
     if (el) {
       let { top, left, height } = el.getBoundingClientRect();
       const widowWidth = window.innerWidth;
-      if (widowWidth - left < this.width) {
-        left = widowWidth - this.width;
+      const ifOverflowing = this.props.width + left > widowWidth;
+      if (ifOverflowing) {
+        left = widowWidth - this.props.width;
       }
-      position = { top: top + height + this.paddingFromInput, left };
+      left = left < 0 ? 0 : left;
+      position = { top: top + height + this.props.marginFromInput, left };
     }
     return position;
   };
 
-  onKeyPress = (e: Event) => {
+  onKeyPress = (e: any) => {
     this.activeElement = document.activeElement as HTMLInputElement;
     const targetEl = e.target as HTMLInputElement;
     let pressedKey = targetEl.getAttribute("key-val");
@@ -204,14 +255,19 @@ class App extends Component {
     }
 
     if (pressedKey === "tab") {
-      focusNext(this.activeElement);
-      return;
+      if (this.props.focusNextOnTab) {
+        focusNext(this.activeElement);
+        return;
+      } else {
+        pressedKey = "  ";
+      }
     }
 
     pressedKey = shiftIt(activeKeys, targetEl, pressedKey);
     pressedKey = capsIt(activeKeys, pressedKey);
 
     this.triggerChange(this.activeElement, existingValue + pressedKey);
+    this.props.onKeyPress(pressedKey);
   };
 
   triggerChange = (
@@ -242,134 +298,40 @@ class App extends Component {
   };
 
   render() {
-    const { visible, input, textarea, ...position } = this.state;
-    return (
-      <div>
-        <form
-          onSubmit={e => {
-            e.preventDefault();
-            console.log(" submited");
-          }}
-        >
-          <input
-            value={input}
-            placeholder="first input"
-            onChange={e => this.setState({ input: e.target.value })}
-          />
-          <textarea
-            id="t"
-            value={textarea}
-            placeholder="first input"
-            onChange={e => {
-              let x = { value: e.target.value };
-              console.log("text area changed ", x);
-              this.setState({ textarea: e.target.value });
-            }}
-          />
+    const { activeKeys, top, left, visible } = this.state;
+    const { disabled, width, height, fullScreen, stickToBottom } = this.props;
+    const disabledKeys = [...this.disabled, ...disabled];
+    // make sure keyboard width is always less then or equals to the widow width
+    const actualWidth = fullScreen
+      ? window.innerWidth
+      : width > window.innerWidth
+      ? window.innerWidth
+      : width;
 
-          <input
-            placeholder="first input"
-            onChange={e => console.log(" input changed")}
-          />
-          <button> btn </button>
-          <input value={input} placeholder="first input" />
-        </form>
-        {visible && (
-          <Keyboard
-            {...position}
-            width={this.width}
-            onKeyPress={this.onKeyPress}
-            disabledKeys={this.disabled}
-          />
-        )}
+    const actualTop = stickToBottom ? 0 : top;
+    const actualLeft = fullScreen ? 0 : left;
+
+    const position = {
+      width: actualWidth,
+      height: height,
+      transform: `translate(${actualLeft}px, ${actualTop}px)`,
+      transitionDuration: `0.5s`,
+      display: visible ? "block" : "none",
+      bottom: stickToBottom ? 0 : "auto"
+    };
+    return (
+      <div
+        className="_rc-v-keyboard"
+        style={{ ...position }}
+        onClick={this.onKeyPress}
+        tabIndex={-1}
+        // it needs tab index show if user clicks in keyboard body it gets focused
+        // and then we can return focus to input
+      >
+        <KeyboardRows activeKeys={activeKeys} disabledKeys={disabledKeys} />
       </div>
     );
   }
 }
 
-type keyboardProps = {
-  width: number;
-  top: number;
-  left: number;
-  onKeyPress: any;
-  activeKeys?: Map<string, undefined>;
-  disabledKeys?: Array<String>;
-};
-
-const Keyboard = (props: keyboardProps) => {
-  const position = {
-    width: props.width,
-    transform: `translate(${props.left}px, ${props.top}px)`,
-    transitionDuration: `0.5s`
-  };
-  const { activeKeys, disabledKeys = [] } = props;
-  return (
-    <div
-      className="_rc-v-keyboard"
-      style={{ ...position }}
-      onClick={props.onKeyPress}
-      tabIndex={-1}
-      // it needs tab index show if user clicks in keyboard body it gets focused
-      // and then we can return focus to input
-    >
-      <div className="_keys _top-keys">
-        {topRowItems.map(key => {
-          return (
-            <Key value={key.main} sub={key.sub} disabledKeys={disabledKeys} />
-          );
-        })}
-        <SpecialKey value="delete" disabledKeys={disabledKeys} />
-      </div>
-      <div className="_keys _top-keys">
-        <SpecialKey value="tab" disabledKeys={disabledKeys} />
-        {secondRow.map(key => {
-          return (
-            <Key value={key.main} sub={key.sub} disabledKeys={disabledKeys} />
-          );
-        })}
-      </div>
-      <div className="_keys _top-keys">
-        <SpecialKey
-          value="caps"
-          name="caps lock"
-          activeKeys={activeKeys}
-          disabledKeys={disabledKeys}
-        />
-        {thirdRow.map(key => {
-          return (
-            <Key value={key.main} sub={key.sub} disabledKeys={disabledKeys} />
-          );
-        })}
-        <SpecialKey value="enter" disabledKeys={disabledKeys} />
-      </div>
-      <div className="_keys _top-keys">
-        <SpecialKey
-          value="shift"
-          activeKeys={activeKeys}
-          disabledKeys={disabledKeys}
-        />
-        {fourthRow.map(key => {
-          return (
-            <Key value={key.main} sub={key.sub} disabledKeys={disabledKeys} />
-          );
-        })}
-        <SpecialKey
-          value="shift"
-          activeKeys={activeKeys}
-          disabledKeys={disabledKeys}
-        />
-      </div>
-      <div className="_keys _top-keys">
-        {fifthRow.map(key => {
-          return key.isSpace ? (
-            <SpaceKey disabled={disabledKeys.indexOf(" ") !== -1} />
-          ) : (
-            <SpecialKey value={key.main} disabledKeys={disabledKeys} />
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-export default App;
+export default Keyboard;

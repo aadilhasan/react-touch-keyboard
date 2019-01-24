@@ -1,4 +1,4 @@
-export const topRowItems = [
+export const firstRowItems = [
   {
     main: "`",
     sub: "~"
@@ -198,7 +198,7 @@ export const fifthRow = [
   }
 ];
 
-export const isTextInputElement = node => {
+export const isTextInputElement = (node: HTMLElement) => {
   return (
     node &&
     node.nodeName &&
@@ -216,7 +216,7 @@ export const isTextInputElement = node => {
 //   return key;
 // };
 
-export const addEnter = (targetEl, key) => {
+export const addEnter = (targetEl: HTMLElement, key: string) => {
   if (key === "enter") {
     if (targetEl && targetEl.nodeName === "TEXTAREA") {
       return "\n";
@@ -226,19 +226,11 @@ export const addEnter = (targetEl, key) => {
   return key;
 };
 
-// export const shiftIt = (
-//   activeKeys: Map<string, undefined>,
-//   targetEl: HTMLInputElement,
-//   mainValue: string
-// ): string => {
-//   if (activeKeys.has("shift")) {
-//     const shiftValue = targetEl.getAttribute("shift-val");
-//     mainValue = shiftValue ? shiftValue : mainValue.toUpperCase();
-//   }
-//   return mainValue;
-// };
-
-export const shiftIt = (activeKeys, targetEl, mainValue) => {
+export const shiftIt = (
+  activeKeys: Map<string, undefined>,
+  targetEl: HTMLInputElement,
+  mainValue: string
+): string => {
   if (activeKeys.has("shift")) {
     const shiftValue = targetEl.getAttribute("shift-val");
     mainValue = shiftValue ? shiftValue : mainValue.toUpperCase();
@@ -246,20 +238,14 @@ export const shiftIt = (activeKeys, targetEl, mainValue) => {
   return mainValue;
 };
 
-// export const capsIt = (activeKeys: any, mainValue: string): string => {
-//   if (activeKeys.has("caps")) {
-//     mainValue = mainValue.toUpperCase();
-//   }
-//   return mainValue;
-// };
-export const capsIt = (activeKeys, mainValue) => {
+export const capsIt = (activeKeys: any, mainValue: string): string => {
   if (activeKeys.has("caps")) {
     mainValue = mainValue.toUpperCase();
   }
   return mainValue;
 };
 
-export const focusNext = el => {
+export const focusNext = (el: HTMLInputElement | HTMLTextAreaElement) => {
   const allFocusableElements = document.querySelectorAll(
     'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
   );
@@ -267,7 +253,10 @@ export const focusNext = el => {
     len = allFocusableElements.length;
   for (i; i < len; i += 1) {
     if (allFocusableElements[i] === el && i + 1 < len) {
-      allFocusableElements[i + 1].focus();
+      const el = allFocusableElements[i + 1] as
+        | HTMLInputElement
+        | HTMLTextAreaElement;
+      el.focus();
     }
   }
 };
