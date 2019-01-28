@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import Keyboard from "../keyboard";
+import Keyboard from "../lib";
 
 type myState = {
   input: string;
