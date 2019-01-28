@@ -10,7 +10,7 @@ import {
   capsIt,
   focusNext,
   noop
-} from "./helper";
+} from "./utils/helper";
 
 import "./keyboard.scss";
 
