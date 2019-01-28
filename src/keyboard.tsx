@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import * as ReactDOM from "react-dom";
 
 import KeyboardRows from "./components/rows";
 
@@ -20,6 +21,8 @@ declare global {
   }
 }
 
+const defaultMountNode = document.body;
+
 type elementPosition = {
   top: number;
   left: number;
@@ -34,6 +37,7 @@ type KeyboardProps = {
   height: number | string;
   fullScreen: Boolean;
   stickToBottom: Boolean;
+  mountAt: HTMLElement | null;
   onKeyPress: Function;
   beforeOpen: Function;
   afterOpen: Function;
@@ -50,6 +54,7 @@ let DefaultProps = {
   height: "auto",
   fullScreen: false,
   stickToBottom: false,
+  mountAt: defaultMountNode,
   onKeyPress: noop,
   beforeOpen: noop, // gets triggered every time focus changes
   afterOpen: noop, // gets triggered every time focus changes
@@ -293,7 +298,14 @@ class Keyboard extends Component<KeyboardProps> {
 
   render() {
     const { activeKeys, top, left, visible } = this.state;
-    const { disabled, width, height, fullScreen, stickToBottom } = this.props;
+    const {
+      disabled,
+      width,
+      height,
+      fullScreen,
+      stickToBottom,
+      mountAt
+    } = this.props;
     const disabledKeys = [...this.disabled, ...disabled];
     // make sure keyboard width is always less then or equals to the widow width
     const actualWidth = fullScreen
@@ -313,7 +325,10 @@ class Keyboard extends Component<KeyboardProps> {
       display: visible ? "block" : "none",
       bottom: stickToBottom ? 0 : "auto"
     };
-    return (
+
+    const parentNode = mountAt instanceof Node ? mountAt : defaultMountNode;
+
+    return ReactDOM.createPortal(
       <div
         className="_rc-v-keyboard"
         style={{ ...position }}
@@ -323,7 +338,8 @@ class Keyboard extends Component<KeyboardProps> {
         // and then we can return focus to input
       >
         <KeyboardRows activeKeys={activeKeys} disabledKeys={disabledKeys} />
-      </div>
+      </div>,
+      parentNode
     );
   }
 }

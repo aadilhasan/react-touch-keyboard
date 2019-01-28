@@ -7,18 +7,6 @@ type myState = {
   textarea: string;
 };
 
-type elementPosition = {
-  top: number;
-  left: number;
-};
-
-declare global {
-  interface Window {
-    HTMLInputElement: any;
-    HTMLTextAreaElement: any;
-  }
-}
-
 class Example extends Component {
   state: myState = {
     input: "",
@@ -64,7 +52,7 @@ class Example extends Component {
           <br />
           <input value={input} placeholder="first input" />
         </form>
-        <Keyboard />
+        <Keyboard mountAt={document.getElementById("root")} />
       </div>
     );
   }
