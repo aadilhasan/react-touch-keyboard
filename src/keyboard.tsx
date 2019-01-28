@@ -1,20 +1,14 @@
 import React, { Component } from "react";
 
-import KeyboardRows from "./rows";
-import SpecialKey from "./special-key";
-import SpaceKey from "./space-key";
+import KeyboardRows from "./components/rows";
 
 import {
-  firstRowItems,
-  secondRow,
-  thirdRow,
-  fourthRow,
-  fifthRow,
   isTextInputElement,
   addEnter,
   shiftIt,
   capsIt,
-  focusNext
+  focusNext,
+  noop
 } from "./helper";
 
 import "./keyboard.scss";
@@ -56,11 +50,11 @@ let DefaultProps = {
   height: "auto",
   fullScreen: false,
   stickToBottom: false,
-  onKeyPress: () => {},
-  beforeOpen: () => {}, // gets triggered every time focus changes
-  afterOpen: () => {}, // gets triggered every time focus changes
-  beforeClose: () => {},
-  afterClose: () => {}
+  onKeyPress: noop,
+  beforeOpen: noop, // gets triggered every time focus changes
+  afterOpen: noop, // gets triggered every time focus changes
+  beforeClose: noop,
+  afterClose: noop
 };
 
 type MyState = {

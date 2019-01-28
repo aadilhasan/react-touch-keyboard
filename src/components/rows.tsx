@@ -9,7 +9,7 @@ import {
   thirdRow,
   fourthRow,
   fifthRow
-} from "./helper";
+} from "../helper";
 
 type RowProps = {
   activeKeys?: Map<string, undefined>;

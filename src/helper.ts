@@ -260,3 +260,5 @@ export const focusNext = (el: HTMLInputElement | HTMLTextAreaElement) => {
     }
   }
 };
+
+export const noop = () => {};
