@@ -27,6 +27,10 @@
       box-sizing: border-box;
       background-color: white;
 
+      &:active {
+        background-color: #e2e2e2;
+      }
+
       outline: none !important;
 
       // make keyboard-text none selectable

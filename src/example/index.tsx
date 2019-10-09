@@ -52,7 +52,12 @@ class Example extends Component {
           <br />
           <input value={input} placeholder="first input" />
         </form>
-        <Keyboard mountAt={document.getElementById("root")} />
+        <Keyboard
+          stickToBottom
+          alwaysOpen
+          fullScreen
+          mountAt={document.getElementById("root")}
+        />
       </div>
     );
   }

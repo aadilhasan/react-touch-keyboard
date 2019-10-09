@@ -64,8 +64,9 @@ let DefaultProps = {
 
 type MyState = {
   visible: Boolean;
-  top: number;
-  left: number;
+  top: number | string;
+  left: number | string;
+  bottom: number | string;
   activeKeys: Map<string, undefined>;
   input: string;
   textarea: string;
@@ -91,15 +92,16 @@ class Keyboard extends Component<KeyboardProps> {
   state: MyState = {
     visible: false,
     activeKeys: new Map(),
-    top: 0,
-    left: 0,
+    top: "auto",
+    left: "auto",
+    bottom: "auto",
     input: "",
     textarea: ""
   };
 
-  constructor(props: any) {
+  constructor(props: KeyboardProps) {
     super(props);
-    this.state = { ...this.state };
+    this.state = { ...this.state, visible: props.alwaysOpen };
   }
 
   componentDidMount() {
@@ -185,8 +187,8 @@ class Keyboard extends Component<KeyboardProps> {
     // }
     this.timeout = setTimeout(() => {
       if (this.timeout === -1) return; // fix edge case when on double tab keyboard hides
-
       this.timeout = -1;
+      if (this.props.alwaysOpen) return;
       this.props.beforeClose();
       this.setState({ visible: false }, () => {
         this.props.afterClose();
@@ -223,6 +225,7 @@ class Keyboard extends Component<KeyboardProps> {
 
   onKeyPress = (e: any) => {
     this.activeElement = document.activeElement as HTMLInputElement;
+    if (this.activeElement === document.body) return;
     const targetEl = e.target as HTMLInputElement;
     let pressedKey = targetEl.getAttribute("key-val");
     const classList = targetEl.classList;
@@ -314,12 +317,13 @@ class Keyboard extends Component<KeyboardProps> {
       ? window.innerWidth
       : width;
 
-    const actualTop = stickToBottom ? 0 : top;
+    const actualTop = stickToBottom ? "auto" : top;
     const actualLeft = fullScreen ? 0 : left;
 
     const position = {
       width: actualWidth,
       height: height,
+      top: stickToBottom ? "auto" : "",
       transform: `translate(${actualLeft}px, ${actualTop}px)`,
       transitionDuration: `0.5s`,
       display: visible ? "block" : "none",
