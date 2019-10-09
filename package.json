@@ -1,7 +1,6 @@
 {
-  "name": "react-touch-keyboard",
+  "name": "react-touch-device-keyboard",
   "version": "0.1.0",
-  "private": true,
   "dependencies": {
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
@@ -31,5 +30,29 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "author": "aadil hasan",
+  "keywords": [
+    "react-touch-device-keyboard",
+    "react-touch-device",
+    "touch-device-keyboard",
+    "react-touch-keybaoard",
+    "touch-keybaoard",
+    "web-keybaoard",
+    "virtual-keybaoard",
+    "browser-keybaoard",
+    "react-keybaoard",
+    "keybaoard",
+    "react",
+    "react js"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aadilhasan/react-touch-keyboard.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aadilhasan/react-touch-keyboard/issues"
+  },
+  "homepage": "https://github.com/aadilhasan/react-touch-keyboard#readme"
 }

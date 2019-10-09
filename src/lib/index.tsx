@@ -47,7 +47,7 @@ type KeyboardProps = {
 
 let DefaultProps = {
   marginFromInput: 10,
-  focusNextOnTab: true,
+  focusNextOnTab: false,
   alwaysOpen: false,
   disabled: [],
   width: 900,

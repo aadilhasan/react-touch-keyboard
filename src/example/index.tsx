@@ -57,6 +57,7 @@ class Example extends Component {
           alwaysOpen
           fullScreen
           mountAt={document.getElementById("root")}
+          onKeyPress={(e: any) => console.log(e)}
         />
       </div>
     );
