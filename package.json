@@ -1,5 +1,6 @@
 {
   "name": "react-touch-device-keyboard",
+  "main": "build/index.js",
   "version": "0.1.0",
   "dependencies": {
     "react": "^16.10.2",
