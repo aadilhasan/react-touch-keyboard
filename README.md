@@ -1,5 +1,8 @@
 React virtual keyboard for touch devices.
 It can be used with native input/text-area element, without touching the existing code.
+
+`In touch devices where keyboard is not attached web/electron apps have to rely on OS virtual keyboard which user has to manually open and close, with this app user don't have to rely on the OS keyboard anymore, the keyboard opens when a input is focused and hides when it gets blured.`
+
 [Click here to see it in action](https://codesandbox.io/s/winter-resonance-wrh5v)
 
 ### install
