@@ -66,6 +66,9 @@ export const secondRow = [
   {
     main: "r"
   },
+    {
+    main: "t"
+  },
   {
     main: "y"
   },
